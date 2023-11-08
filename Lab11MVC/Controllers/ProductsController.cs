@@ -140,45 +140,22 @@ namespace Lab11MVC.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, [Bind("ProductId,Name,Price,IsActive")] Product product)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            //if (_context.Products == null)
-            //{
-            //    return Problem("Entity set 'InvoiceContext.Products'  is null.");
-            //}
-            //var product = await _context.Products.FindAsync(id);
-            //if (product != null)
-            //{
-            //    _context.Products.Remove(product);
-            //}
-
-            //await _context.SaveChangesAsync();
-            //return RedirectToAction(nameof(Index));
-            if (id != product.ProductId)
+            if (_context.Products == null)
             {
-                return NotFound();
+                return Problem("Entity set 'InvoiceContext.Products' is null.");
             }
 
-            
-                try
-                {
-                    _context.Update(product.IsActive = false);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.ProductId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            
-            
+            var product = await _context.Products.FindAsync(id);
+            if (product != null)
+            {
+                product.IsActive = false;
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
